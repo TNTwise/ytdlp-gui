@@ -5,5 +5,5 @@ cx-Freeze==7.0.0
 lief
 pyinstaller
 psutil
-
+yt_dlp
 

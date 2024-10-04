@@ -146,7 +146,7 @@ background-color:#16191d
              </property>
              <layout class="QGridLayout" name="gridLayout_6"/>
             </widget>
-            <widget class="QWidget" name="procPage">
+            <widget class="QWidget" name="mainPage">
              <property name="styleSheet">
               <string notr="true">QWidget{
 background-color:#16191d
@@ -286,7 +286,32 @@ QDoubleSpinBox::down-button {
                          <widget class="QWidget" name="inputFileContainer" native="true">
                           <layout class="QHBoxLayout" name="horizontalLayout_4">
                            <item>
-                            <widget class="QPushButton" name="inputFileSelectButton">
+                            <widget class="QLineEdit" name="inputFileText">
+                             <property name="minimumSize">
+                              <size>
+                               <width>0</width>
+                               <height>30</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>16777215</width>
+                               <height>30</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                             <property name="readOnly">
+                              <bool>false</bool>
+                             </property>
+                             <property name="placeholderText">
+                              <string>Paste YouTube link here</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="getDataButton">
                              <property name="minimumSize">
                               <size>
                                <width>0</width>
@@ -308,26 +333,7 @@ QDoubleSpinBox::down-button {
                               <string notr="true"/>
                              </property>
                              <property name="text">
-                              <string>Youtube Link</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLineEdit" name="inputFileText">
-                             <property name="minimumSize">
-                              <size>
-                               <width>0</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>16777215</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="readOnly">
-                              <bool>false</bool>
+                              <string>Get Data</string>
                              </property>
                             </widget>
                            </item>
@@ -426,12 +432,12 @@ QDoubleSpinBox::down-button {
                              </property>
                              <item>
                               <property name="text">
-                               <string>Audio</string>
+                               <string>Video</string>
                               </property>
                              </item>
                              <item>
                               <property name="text">
-                               <string>Video</string>
+                               <string>Audio</string>
                               </property>
                              </item>
                             </widget>
@@ -474,16 +480,6 @@ QDoubleSpinBox::down-button {
                                <height>30</height>
                               </size>
                              </property>
-                             <item>
-                              <property name="text">
-                               <string>Interpolate</string>
-                              </property>
-                             </item>
-                             <item>
-                              <property name="text">
-                               <string>Upscale</string>
-                              </property>
-                             </item>
                             </widget>
                            </item>
                           </layout>

@@ -89,7 +89,7 @@ def build_executable():
             python_path(),
             "-m",
             "PyInstaller",
-            "REAL-Video-Enhancer.py",
+            "main.py",
             "--collect-all",
             "PySide6",
             "--icon=icons/logo-v2.ico",
@@ -101,7 +101,7 @@ def build_executable():
             python_path(),
             "-m",
             "cx_Freeze",
-            "REAL-Video-Enhancer.py",
+            "main.py",
             "--target-dir",
             "dist",
         ]
@@ -130,3 +130,6 @@ install_pip_in_venv()
 install_requirements_in_venv()
 build_gui()
 build_resources()
+if len(sys.argv) > 1:
+    if sys.argv[1] == "--build_exe":
+        build_executable()

@@ -54,8 +54,8 @@ from PySide6.QtWidgets import (
     QGridLayout,
 )
 
-from .QTStyle import styleSheet
-from .Util import printAndLog, networkCheck
+from QTStyle import styleSheet
+from Util import printAndLog, networkCheck
 
 
 class UpdateGUIThread(QThread):

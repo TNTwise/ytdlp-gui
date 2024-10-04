@@ -149,9 +149,9 @@ class Ui_MainWindow(object):
         self.gridLayout_6 = QGridLayout(self.morePage)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.stackedWidget.addWidget(self.morePage)
-        self.procPage = QWidget()
-        self.procPage.setObjectName(u"procPage")
-        self.procPage.setStyleSheet(u"QWidget{\n"
+        self.mainPage = QWidget()
+        self.mainPage.setObjectName(u"mainPage")
+        self.mainPage.setStyleSheet(u"QWidget{\n"
 "background-color:#16191d\n"
 "\n"
 "}\n"
@@ -230,9 +230,9 @@ class Ui_MainWindow(object):
 "        height: 15px;\n"
 "    }\n"
 "")
-        self.gridLayout_3 = QGridLayout(self.procPage)
+        self.gridLayout_3 = QGridLayout(self.mainPage)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.processContainer = QWidget(self.procPage)
+        self.processContainer = QWidget(self.mainPage)
         self.processContainer.setObjectName(u"processContainer")
         self.processContainer.setMaximumSize(QSize(16000, 16777215))
         self.processContainer.setStyleSheet(u"*:disabled{\n"
@@ -260,17 +260,6 @@ class Ui_MainWindow(object):
         self.inputFileContainer.setObjectName(u"inputFileContainer")
         self.horizontalLayout_4 = QHBoxLayout(self.inputFileContainer)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.inputFileSelectButton = QPushButton(self.inputFileContainer)
-        self.inputFileSelectButton.setObjectName(u"inputFileSelectButton")
-        self.inputFileSelectButton.setMinimumSize(QSize(0, 30))
-        self.inputFileSelectButton.setMaximumSize(QSize(16777215, 30))
-        font = QFont()
-        font.setPointSize(15)
-        self.inputFileSelectButton.setFont(font)
-        self.inputFileSelectButton.setStyleSheet(u"")
-
-        self.horizontalLayout_4.addWidget(self.inputFileSelectButton)
-
         self.inputFileText = QLineEdit(self.inputFileContainer)
         self.inputFileText.setObjectName(u"inputFileText")
         self.inputFileText.setMinimumSize(QSize(0, 30))
@@ -278,6 +267,17 @@ class Ui_MainWindow(object):
         self.inputFileText.setReadOnly(False)
 
         self.horizontalLayout_4.addWidget(self.inputFileText)
+
+        self.getDataButton = QPushButton(self.inputFileContainer)
+        self.getDataButton.setObjectName(u"getDataButton")
+        self.getDataButton.setMinimumSize(QSize(0, 30))
+        self.getDataButton.setMaximumSize(QSize(16777215, 30))
+        font = QFont()
+        font.setPointSize(15)
+        self.getDataButton.setFont(font)
+        self.getDataButton.setStyleSheet(u"")
+
+        self.horizontalLayout_4.addWidget(self.getDataButton)
 
 
         self.verticalLayout_17.addWidget(self.inputFileContainer)
@@ -345,8 +345,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.label_7)
 
         self.resolutionComboBox = QComboBox(self.widget)
-        self.resolutionComboBox.addItem("")
-        self.resolutionComboBox.addItem("")
         self.resolutionComboBox.setObjectName(u"resolutionComboBox")
         sizePolicy1.setHeightForWidth(self.resolutionComboBox.sizePolicy().hasHeightForWidth())
         self.resolutionComboBox.setSizePolicy(sizePolicy1)
@@ -484,7 +482,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addWidget(self.processContainer, 0, 0, 1, 1)
 
-        self.stackedWidget.addWidget(self.procPage)
+        self.stackedWidget.addWidget(self.mainPage)
         self.settingsPage = QWidget()
         self.settingsPage.setObjectName(u"settingsPage")
         self.settingsPage.setStyleSheet(u"QWidget{\n"
@@ -592,16 +590,15 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.inputFileSelectButton.setText(QCoreApplication.translate("MainWindow", u"Youtube Link", None))
+        self.inputFileText.setText("")
+        self.inputFileText.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Paste YouTube link here", None))
+        self.getDataButton.setText(QCoreApplication.translate("MainWindow", u"Get Data", None))
         self.outputFileSelectButton.setText(QCoreApplication.translate("MainWindow", u"Select Output Folder", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Format", None))
-        self.formatComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Audio", None))
-        self.formatComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Video", None))
+        self.formatComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Video", None))
+        self.formatComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Audio", None))
 
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Resolution", None))
-        self.resolutionComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Interpolate", None))
-        self.resolutionComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Upscale", None))
-
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Container", None))
         self.videoInfoTextEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
