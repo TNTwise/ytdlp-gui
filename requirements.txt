@@ -1,0 +1,9 @@
+PySide6
+opencv-python-headless
+requests
+cx-Freeze==7.0.0
+lief
+pyinstaller
+psutil
+
+
