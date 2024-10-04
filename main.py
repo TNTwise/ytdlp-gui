@@ -35,24 +35,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.stackedWidget.setCurrentIndex(2) # i just copy pasted from rve, so i have to set it to this index
         self.__connect__()
+        self.videoContainers = ('mp4','webm')
+        self.audioContainers = ('m4a')
 
     def __connect__(self):
         self.getDataButton.clicked.connect(self.getData)
     
     def getData(self):
         youtubeVideoInfoDict = self.getInfoDictFromURL()
-        resolutions = self.getResolutions(youtubeVideoInfoDict)
+        resolutions = self.getContentFromInfoDict(youtubeVideoInfoDict, 'height')
+        extensions = self.getContentFromInfoDict(youtubeVideoInfoDict, 'ext')
+        self.populateComboBoxes(resolutions=resolutions,extensions=extensions)
 
-    def getResolutions(self, info_dict) -> list:
+    def populateComboBoxes(self, resolutions, extensions):
+        self.resolutionComboBox.addItems(resolutions)
+        self.containerComboBox.addItems(extensions)
+
+    def getContentFromInfoDict(self, info_dict, content):
         formats = info_dict.get('formats', []) 
-        resolutions = set()
+        containers = set()
         for format in formats:
-            resolution = format.get('height')  # Get the height of the format
-            if resolution and resolution > 178:
-                resolutions.add(resolution)
-        resolutions = sorted(resolutions)
-        resolutions.reverse()
-        return resolutions
+            container = format.get(content)  # Get the height of the format
+            if container is not None:
+                containers.add(container)
+        containers = sorted(containers)
+        containers.reverse()
+        return list(map(str, containers)) # cast every item in here to string
             
     def getInfoDictFromURL(self) -> dict:
         link = self.inputFileText.text()
