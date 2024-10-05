@@ -17,15 +17,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QHBoxLayout,
     QLabel, QLineEdit, QMainWindow, QProgressBar,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QStackedWidget, QTextEdit, QVBoxLayout, QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QStackedWidget,
+    QTextEdit, QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(929, 839)
+        MainWindow.resize(929, 712)
         MainWindow.setStyleSheet(u"\n"
 "\n"
 "QMainWindow {\n"
@@ -243,11 +243,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.scrollArea_2 = QScrollArea(self.processContainer)
         self.scrollArea_2.setObjectName(u"scrollArea_2")
-        self.scrollArea_2.setMinimumSize(QSize(0, 400))
+        self.scrollArea_2.setMinimumSize(QSize(0, 0))
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 817, 398))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 817, 334))
         self.gridLayout_4 = QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.processSettingsContainer = QWidget(self.scrollAreaWidgetContents_2)
@@ -397,7 +397,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.videoInfoContainer = QWidget(self.widget_2)
         self.videoInfoContainer.setObjectName(u"videoInfoContainer")
-        self.videoInfoContainer.setMinimumSize(QSize(0, 60))
+        self.videoInfoContainer.setMinimumSize(QSize(0, 0))
         self.videoInfoContainer.setMaximumSize(QSize(16777215, 300))
         self.videoInfoContainer.setStyleSheet(u"QWidget {\n"
 "	background-color:#1f232a;\n"
@@ -410,8 +410,11 @@ class Ui_MainWindow(object):
         self.videoInfoTextEdit.setEnabled(True)
         sizePolicy.setHeightForWidth(self.videoInfoTextEdit.sizePolicy().hasHeightForWidth())
         self.videoInfoTextEdit.setSizePolicy(sizePolicy)
-        self.videoInfoTextEdit.setMinimumSize(QSize(0, 30))
+        self.videoInfoTextEdit.setMinimumSize(QSize(0, 0))
         self.videoInfoTextEdit.setMaximumSize(QSize(16777215, 160))
+        font1 = QFont()
+        font1.setPointSize(20)
+        self.videoInfoTextEdit.setFont(font1)
 #if QT_CONFIG(accessibility)
         self.videoInfoTextEdit.setAccessibleDescription(u"")
 #endif // QT_CONFIG(accessibility)
@@ -432,13 +435,9 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_7.addWidget(self.widget_2)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_7.addItem(self.verticalSpacer_2)
-
         self.bottomMenuSubContainer = QWidget(self.processContainer)
         self.bottomMenuSubContainer.setObjectName(u"bottomMenuSubContainer")
-        self.bottomMenuSubContainer.setMinimumSize(QSize(0, 85))
+        self.bottomMenuSubContainer.setMinimumSize(QSize(0, 0))
         self.bottomMenuSubContainer.setStyleSheet(u"#bottomMenuSubContainer{\n"
 "background-color:#1f232a\n"
 "}\n"
@@ -453,19 +452,19 @@ class Ui_MainWindow(object):
 "}")
         self.horizontalLayout_2 = QHBoxLayout(self.bottomMenuSubContainer)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.startRenderButton = QPushButton(self.bottomMenuSubContainer)
-        self.startRenderButton.setObjectName(u"startRenderButton")
-        self.startRenderButton.setEnabled(True)
-        self.startRenderButton.setMaximumSize(QSize(59, 16777215))
-        self.startRenderButton.setStyleSheet(u"")
+        self.startDownloadButton = QPushButton(self.bottomMenuSubContainer)
+        self.startDownloadButton.setObjectName(u"startDownloadButton")
+        self.startDownloadButton.setEnabled(True)
+        self.startDownloadButton.setMaximumSize(QSize(59, 16777215))
+        self.startDownloadButton.setStyleSheet(u"")
         icon = QIcon()
         icon.addFile(u":/icons/icons/arrow-down-circle.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.startRenderButton.setIcon(icon)
-        self.startRenderButton.setIconSize(QSize(55, 40))
-        self.startRenderButton.setCheckable(True)
-        self.startRenderButton.setChecked(False)
+        self.startDownloadButton.setIcon(icon)
+        self.startDownloadButton.setIconSize(QSize(55, 40))
+        self.startDownloadButton.setCheckable(True)
+        self.startDownloadButton.setChecked(False)
 
-        self.horizontalLayout_2.addWidget(self.startRenderButton)
+        self.horizontalLayout_2.addWidget(self.startDownloadButton)
 
         self.progressBar = QProgressBar(self.bottomMenuSubContainer)
         self.progressBar.setObjectName(u"progressBar")
@@ -606,15 +605,12 @@ class Ui_MainWindow(object):
 "hr { height: 1px; border-width: 0; }\n"
 "li.unchecked::marker { content: \"\\2610\"; }\n"
 "li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">FPS:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Resolution:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Bitrate:</span"
-                        "></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Encoder:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Container:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Frame Count:</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;\"><br /></p></body></html>", None))
-        self.startRenderButton.setText("")
+"</style></head><body style=\" font-family:'Sans Serif'; font-size:20pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Title: </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Highest resolution:</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Frame Count:</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margi"
+                        "n-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+        self.startDownloadButton.setText("")
     # retranslateUi
 

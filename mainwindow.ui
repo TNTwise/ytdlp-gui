@@ -660,7 +660,7 @@ background-color:#676e7b
                    </property>
                    <layout class="QHBoxLayout" name="horizontalLayout_2">
                     <item>
-                     <widget class="QPushButton" name="startRenderButton">
+                     <widget class="QPushButton" name="startDownloadButton">
                       <property name="enabled">
                        <bool>true</bool>
                       </property>
