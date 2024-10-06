@@ -434,7 +434,6 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
         self.plainTextEdit.setTextCursor(cursor)
 
 
-
 class RegularQTPopup(QtWidgets.QDialog):
     def __init__(self, message):
         super().__init__()

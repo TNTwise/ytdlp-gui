@@ -98,8 +98,6 @@ def networkCheck(hostname="https://raw.githubusercontent.com") -> bool:
     return False
 
 
-
-
 def getRAMAmount() -> str:
     """
     Returns the amount of RAM in the system.
@@ -107,8 +105,6 @@ def getRAMAmount() -> str:
     ram = psutil.virtual_memory().total
     ram_gb = ram / (1024**3)
     return f"{ram_gb:.2f} GB"
-
-
 
 
 def pythonPath() -> str:
@@ -140,7 +136,6 @@ def videosPath() -> str:
         return os.path.join(homedir, "Desktop")
     else:
         return os.path.join(homedir, "Videos")
-
 
 
 def copy(prev: str, new: str):
@@ -325,6 +320,8 @@ def openLink(link: str):
     :type link: str
     """
     webbrowser.open(link)
+
+
 def errorAndLog(message: str):
     log("ERROR: " + message)
     raise os.error("ERROR: " + message)
