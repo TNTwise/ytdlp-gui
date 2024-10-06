@@ -4,6 +4,7 @@ import os
 
 # other imports
 import yt_dlp
+import yt_dlp.version
 
 
 class DownloadManager:
@@ -14,6 +15,7 @@ class DownloadManager:
         mediaType: str,
         resolutionHeight: int,
         getAvailableHeights: bool,
+        printVersion: bool,
     ):
         super().__init__()
         self.videoContainers = ("mp4", "webm")
@@ -23,18 +25,26 @@ class DownloadManager:
         self.output = output
         self.format = format
         self.resolutionHeight = resolutionHeight
-        if getAvailableHeights:
-            print(self.getData()[0])
-            exit()
+        self.getAvailableHeights = getAvailableHeights
+        self.printVersion = printVersion
+        
+        self.inputValidation()
         self.download()
 
+    def inputValidation(self):
+        if self.getAvailableHeights:
+            print(self.getData()[0])
+            exit()
+        if self.printVersion:
+            print(yt_dlp.version.__version__)
+            exit()
+        if self.url is None:
+            print("Please provide a url")
+            exit()
+
     def progress_hook(self, d):
-        if d["status"] == "downloading":
-            print(
-                f"Downloading: {d['_percent_str']} at {d['_speed_str']} ETA: {d['_eta_str']}"
-            )
-        elif d["status"] == "finished":
-            print("Download completed")
+        if d["status"] == "finished":
+            print("\nDownload completed")
 
     def download(self):
         if self.mediaType.lower() == "video":
@@ -102,6 +112,7 @@ class Backend:
             mediaType=args.mediaType,
             resolutionHeight=args.resolutionHeight,
             getAvailableHeights=args.getAvailableHeights,
+            printVersion=args.version,
         )
 
     def handleArguments(self) -> argparse.ArgumentParser:
@@ -120,7 +131,7 @@ class Backend:
             "--url",
             help="url",
             type=str,
-            required=True,
+            default=None,
         )
         parser.add_argument(
             "-o",
@@ -148,7 +159,12 @@ class Backend:
             help="Prints out the available heights of the video",
             action="store_true",
         )
-
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="store_true",
+            help="Prints the version of the program and exits",
+        )
         return parser.parse_args()
 
 

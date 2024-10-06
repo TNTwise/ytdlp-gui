@@ -55,6 +55,19 @@ def getAvailableDiskSpace() -> float:
 with open(os.path.join(cwd, "frontend_log.txt"), "w") as f:
     pass
 
+def extractTarGZ(file):
+    """
+    Extracts a tar gz in the same directory as the tar file and deleted it after extraction.
+    """
+    origCWD = os.getcwd()
+    dir_path = os.path.dirname(os.path.realpath(file))
+    os.chdir(dir_path)
+    printAndLog("Extracting: " + file)
+    tar = tarfile.open(file, "r:gz")
+    tar.extractall()
+    tar.close()
+    removeFile(file)
+    os.chdir(origCWD)
 
 def backendDirectory():
     """

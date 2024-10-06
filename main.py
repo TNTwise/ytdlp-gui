@@ -28,7 +28,9 @@ from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on
 
 # other imports
 from QTStyle import Palette
-import yt_dlp
+from QtCustom import SettingUpBackendPopup, DownloadProgressPopup, DisplayCommandOutputPopup
+from Util import pythonPath, backendDirectory, makeExecutable, currentDirectory, extractTarGZ, getPlatform
+from platform import machine
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -39,96 +41,127 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             2
         )  # i just copy pasted from rve, so i have to set it to this index
         self.__connect__()
-        self.videoContainers = ("mp4", "webm")
-        self.audioContainers = ("mp3", "wav")
+        self.downloadPython()
+        self.pipInstall(["yt-dlp"])
+        
 
     def __connect__(self):
         self.getDataButton.clicked.connect(self.getData)
         self.startDownloadButton.clicked.connect(lambda: self.download())
 
-    def progress_hook(self, d):
-        if d["status"] == "downloading":
-            print(d)
-
-    def download(self):
-        mediaType = self.formatComboBox.currentText()
-        video_url = self.inputFileText.text()
-        height = self.resolutionComboBox.currentText()
-        extension = self.resolutionComboBox.currentText()
-        if mediaType.lower() == "video":
-            ydl_opts = {
-                "format": f"bestvideo[height<={height}][ext={extension}]+bestaudio/best",
-                "ext": [extension],
-                "progress_hooks": [self.progress_hook],  # Hook for progress reporting
-            }
-        elif mediaType.lower() == "audio":
-            ydl_opts = {
-                "format": f"bestaudio[]",  # Select the best audio format with the desired extension
-                "progress_hooks": [self.progress_hook],
-                "postprocessors": [
-                    {  # Convert audio to the desired format
-                        "key": "FFmpegExtractAudio",
-                        "preferredcodec": self.audioContainers[
-                            0
-                        ],  # Desired audio codec (e.g., mp3, wav)
-                        "preferredquality": "192",  # Desired quality (if applicable)
-                    }
-                ],
-            }
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([video_url])
-        except yt_dlp.utils.DownloadError:
-            RegularQTPopup(
-                "Cannot download with current settings\n, please change the container!"
+    def downloadPython(self):
+        if not os.path.exists(pythonPath()):
+            os.makedirs(os.path.join(currentDirectory(), "python"), exist_ok=True)
+            link = "https://github.com/indygreg/python-build-standalone/releases/download/20240814/cpython-3.11.9+20240814-"
+            pyDir = os.path.join(
+                currentDirectory(),
+                "python",
+                "python.tar.gz",
+            )
+            match getPlatform():
+                case "linux":
+                    link += "x86_64-unknown-linux-gnu-install_only.tar.gz"
+                case "win32":
+                    link += "x86_64-pc-windows-msvc-install_only.tar.gz"
+                case "darwin":
+                    if machine() == "arm64":
+                        link += "aarch64-apple-darwin-install_only.tar.gz"
+                    else:
+                        link += "x86_64-apple-darwin-install_only.tar.gz"
+            # probably can add macos support later
+            print("Downloading Python")
+            DownloadProgressPopup(
+                link=link, downloadLocation=pyDir, title="Downloading Python"
             )
 
+            # extract python
+            extractTarGZ(pyDir)
+
+            # give executable permissions to python
+            makeExecutable(pythonPath())
+    def pipInstall(
+        self, deps: list
+    ):  # going to have to make this into a qt module pop up
+        command = [
+            pythonPath(),
+            "-m",
+            "pip",
+            "install",
+            "-U",
+            "--no-warn-script-location",
+            "--cache-dir=" + os.path.join(currentDirectory(), "pip_cache"),
+        ] + deps
+        # totalDeps = self.get_total_dependencies(deps)
+        totalDeps = len(deps)
+        print("Downloading Deps: " + str(command))
+        print("Total Dependencies: " + str(totalDeps))
+
+        DisplayCommandOutputPopup(
+            command=command,
+            title="Download Dependencies",
+            progressBarLength=totalDeps,
+        )
+        command = [
+            pythonPath(),
+            "-m",
+            "pip",
+            "cache",
+            "purge",
+        ]
+        DisplayCommandOutputPopup(
+            command=command,
+            title="Purging Cache",
+            progressBarLength=1,
+        )
+        
     def getData(self):
-        youtubeVideoInfoDict = self.getInfoDictFromURL()
-        resolutions = self.getContentFromInfoDict(youtubeVideoInfoDict, "height")
-        extensions = self.getContentFromInfoDict(youtubeVideoInfoDict, "ext")
-        self.populateComboBoxes(resolutions=resolutions, extensions=extensions)
-
-    def populateComboBoxes(self, resolutions, extensions):
-        self.resolutionComboBox.addItems(resolutions)
-        self.containerComboBox.addItems(extensions)
-
-    def getContentFromInfoDict(self, info_dict, content):
-        formats = info_dict.get("formats", [])
-        containers = set()
-        for format in formats:
-            container = format.get(content)  # Get the height of the format
-            if container is not None:
-                containers.add(container)
-        containers = sorted(containers)
-        containers.reverse()
-        return list(map(str, containers))  # cast every item in here to string
-
-    def getInfoDictFromURL(self) -> dict:
         link = self.inputFileText.text()
-        with yt_dlp.YoutubeDL() as ydl:
-            info_dict = ydl.extract_info(link, download=False)
-        return info_dict
+        resolutions = self.getResolutionsFromBackend(link)
+        self.populateComboBoxes(resolutions=resolutions)
 
-    def getDataFromYoutubeVideo(self):
-        # RegularQTPopup("Getting youtube video statistics")
-        try:
-            ydl_opts = {"format": "bestvideo+bestaudio/best"}
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(link, download=False)
-            print(info_dict)
-            self.videoContainer = info_dict["ext"]
-            self.inputFile = info_dict["title"] + self.videoContainer
-            self.videoWidth = info_dict["width"]
-            self.videoHeight = info_dict["height"]
-            self.videoFps = info_dict["fps"]
-            self.videoEncoder = info_dict["vcodec"]
-            self.videoBitrate = info_dict["vbr"]
-            self.videoFrameCount = int(info_dict["duration"] * info_dict["fps"])
-            print(self.videoContainer)
-        except:
-            RegularQTPopup("Failed to get youtube video!")
+    def populateComboBoxes(self, resolutions):
+        self.resolutionComboBox.addItems(resolutions)
 
+    def getResolutionsFromBackend(self,link):
+        
+        self.process = subprocess.Popen(
+            [
+                pythonPath(),
+                os.path.join(backendDirectory(), "backend.py"),
+                "--getAvailableHeights",
+                "--url",
+                link,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True,
+        )
+        self.process.wait()
+        totalOutput = ""
+        for line in iter(self.process.stdout.readline, ""):
+            totalOutput += line
+        
+        output = totalOutput
+        # hack to filter out bad find
+        new_out = ""
+        for word in output:
+            if "objc" in word:
+                continue
+            new_out += word + " "
+        output = new_out
+        # Find the part of the output containing the backends list
+        start = output.find("[")
+        end = output.find("]") + 1
+        backends_str = output[start:end]
+
+        # Convert the string representation of the list to an actual list
+        backends:list[str] = eval(backends_str)
+        n = []
+        for i in backends:
+            n.append(str(i.strip().replace(" ", "")))
+        return n
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
