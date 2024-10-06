@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QHBoxLayout,
     QLabel, QLineEdit, QMainWindow, QProgressBar,
     QPushButton, QScrollArea, QSizePolicy, QStackedWidget,
-    QTextEdit, QVBoxLayout, QWidget)
+    QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
@@ -247,7 +247,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 817, 334))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 817, 512))
         self.gridLayout_4 = QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.processSettingsContainer = QWidget(self.scrollAreaWidgetContents_2)
@@ -288,7 +288,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.outputFileSelectButton = QPushButton(self.outputFileContainer)
         self.outputFileSelectButton.setObjectName(u"outputFileSelectButton")
-        self.outputFileSelectButton.setEnabled(False)
+        self.outputFileSelectButton.setEnabled(True)
         self.outputFileSelectButton.setMinimumSize(QSize(0, 30))
         self.outputFileSelectButton.setMaximumSize(QSize(16777215, 30))
         self.outputFileSelectButton.setFont(font)
@@ -298,7 +298,7 @@ class Ui_MainWindow(object):
 
         self.outputFileText = QLineEdit(self.outputFileContainer)
         self.outputFileText.setObjectName(u"outputFileText")
-        self.outputFileText.setEnabled(False)
+        self.outputFileText.setEnabled(True)
         self.outputFileText.setMinimumSize(QSize(0, 30))
         self.outputFileText.setMaximumSize(QSize(16777215, 30))
 
@@ -334,17 +334,17 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_17.addWidget(self.widget_3)
 
-        self.widget = QWidget(self.processSettingsContainer)
-        self.widget.setObjectName(u"widget")
-        self.horizontalLayout = QHBoxLayout(self.widget)
+        self.resolutionSettingContainer = QWidget(self.processSettingsContainer)
+        self.resolutionSettingContainer.setObjectName(u"resolutionSettingContainer")
+        self.horizontalLayout = QHBoxLayout(self.resolutionSettingContainer)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label_7 = QLabel(self.widget)
+        self.label_7 = QLabel(self.resolutionSettingContainer)
         self.label_7.setObjectName(u"label_7")
         self.label_7.setFont(font)
 
         self.horizontalLayout.addWidget(self.label_7)
 
-        self.resolutionComboBox = QComboBox(self.widget)
+        self.resolutionComboBox = QComboBox(self.resolutionSettingContainer)
         self.resolutionComboBox.setObjectName(u"resolutionComboBox")
         sizePolicy1.setHeightForWidth(self.resolutionComboBox.sizePolicy().hasHeightForWidth())
         self.resolutionComboBox.setSizePolicy(sizePolicy1)
@@ -354,7 +354,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.resolutionComboBox)
 
 
-        self.verticalLayout_17.addWidget(self.widget)
+        self.verticalLayout_17.addWidget(self.resolutionSettingContainer)
 
 
         self.gridLayout_4.addWidget(self.processSettingsContainer, 0, 0, 1, 1)
@@ -373,43 +373,6 @@ class Ui_MainWindow(object):
         self.widget_2.setMaximumSize(QSize(16777215, 250))
         self.verticalLayout_13 = QVBoxLayout(self.widget_2)
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
-        self.videoInfoContainer = QWidget(self.widget_2)
-        self.videoInfoContainer.setObjectName(u"videoInfoContainer")
-        self.videoInfoContainer.setMinimumSize(QSize(0, 0))
-        self.videoInfoContainer.setMaximumSize(QSize(16777215, 300))
-        self.videoInfoContainer.setStyleSheet(u"QWidget {\n"
-"	background-color:#1f232a;\n"
-"	border-radius:10px;\n"
-"}")
-        self.verticalLayout_10 = QVBoxLayout(self.videoInfoContainer)
-        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
-        self.videoInfoTextEdit = QTextEdit(self.videoInfoContainer)
-        self.videoInfoTextEdit.setObjectName(u"videoInfoTextEdit")
-        self.videoInfoTextEdit.setEnabled(True)
-        sizePolicy.setHeightForWidth(self.videoInfoTextEdit.sizePolicy().hasHeightForWidth())
-        self.videoInfoTextEdit.setSizePolicy(sizePolicy)
-        self.videoInfoTextEdit.setMinimumSize(QSize(0, 0))
-        self.videoInfoTextEdit.setMaximumSize(QSize(16777215, 160))
-        font1 = QFont()
-        font1.setPointSize(20)
-        self.videoInfoTextEdit.setFont(font1)
-#if QT_CONFIG(accessibility)
-        self.videoInfoTextEdit.setAccessibleDescription(u"")
-#endif // QT_CONFIG(accessibility)
-        self.videoInfoTextEdit.setStyleSheet(u"QTextEdit{\n"
-"background-color:#343b47;\n"
-"color:white;\n"
-"}\n"
-"QTextEdit:disabled{color:white;}")
-        self.videoInfoTextEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.videoInfoTextEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.videoInfoTextEdit.setReadOnly(True)
-
-        self.verticalLayout_10.addWidget(self.videoInfoTextEdit)
-
-
-        self.verticalLayout_13.addWidget(self.videoInfoContainer)
-
 
         self.verticalLayout_7.addWidget(self.widget_2)
 
@@ -576,18 +539,6 @@ class Ui_MainWindow(object):
         self.mediaTypeComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Audio", None))
 
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Resolution", None))
-        self.videoInfoTextEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:'Sans Serif'; font-size:20pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Title: </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Highest resolution:</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Frame Count:</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margi"
-                        "n-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
         self.startDownloadButton.setText("")
     # retranslateUi
 

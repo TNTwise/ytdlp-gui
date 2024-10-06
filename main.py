@@ -38,7 +38,10 @@ from Util import (
     makeExecutable,
     currentDirectory,
     extractTarGZ,
+    homedir,
+    videosPath,
     getPlatform,
+    checkForWritePermissions
 )
 from platform import machine
 import subprocess
@@ -50,11 +53,12 @@ class DownloadThread(QThread):
     output = Signal(str)
     finished = Signal()
 
-    def __init__(self, link, height, mediaType):
+    def __init__(self, link, height, mediaType, outputFolder):
         super().__init__()
         self.link = link
         self.height = height
         self.mediaType = mediaType
+        self.outputFolder = outputFolder
 
     def run(self):
         self.renderProcess = subprocess.Popen(
@@ -67,6 +71,8 @@ class DownloadThread(QThread):
                 self.height,
                 "--mediaType",
                 self.mediaType,
+                "--output",
+                self.outputFolder
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -88,11 +94,7 @@ class DownloadThread(QThread):
                 break
         self.renderProcess.wait()
         self.finished.emit()
-
-        
-
     
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -111,6 +113,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __connect__(self):
         self.getDataButton.clicked.connect(self.getData)
         self.startDownloadButton.clicked.connect(lambda: self.download())
+        self.mediaTypeComboBox.currentTextChanged.connect(self.updateGuiElements)
+        self.startDownloadButton.setDisabled(False)
+        self.outputFileSelectButton.clicked.connect(self.openOutputFolder)
+        self.outputFileText.setText(videosPath())
+
+    def updateGuiElements(self):
+        self.resolutionSettingContainer.setVisible(self.mediaTypeComboBox.currentText().lower() == "video")
 
     def downloadPython(self):
         if not os.path.exists(pythonPath()):
@@ -179,9 +188,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
     def getData(self):
+        # enables the download button
         link = self.inputFileText.text()
         resolutions = self.getResolutionsFromBackend(link)
         self.populateComboBoxes(resolutions=resolutions)
+        self.startDownloadButton.setDisabled(False)
+
+    def openOutputFolder(self):
+        """
+        Opens a folder,
+        sets the directory that is selected to the self.outputFolder variable
+        sets the outputFileText to the output directory
+
+        It will also read the input file name, and generate an output file based on it.
+        """
+        outputFolder = QFileDialog.getExistingDirectory(
+            self,
+            caption="Select Output Directory",
+            dir=homedir,
+        )
+        if checkForWritePermissions(outputFolder):
+            self.outputFileText.setText(
+                os.path.join(outputFolder)
+            )
+        else:
+            RegularQTPopup("No permissions to write here!")
+        
 
     def populateComboBoxes(self, resolutions):
         self.resolutionComboBox.addItems(resolutions)
@@ -225,37 +257,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in backends:
             n.append(str(i.strip().replace(" ", "")))
         return n
+    
+    def disable(self, state:bool):
+        self.inputFileText.setDisabled(state)
+        self.resolutionComboBox.setDisabled(state)
+        self.mediaTypeComboBox.setDisabled(state)
+        self.startDownloadButton.setDisabled(state)
+        self.outputFileContainer.setDisabled(state)
+        self.getDataButton.setDisabled(state)
+
     def download(self):
         link = self.inputFileText.text()
         height = self.resolutionComboBox.currentText()
         mediaType = self.mediaTypeComboBox.currentText()
+        outputFolder = self.outputFileText.text()
 
         # Disable GUI elements
-        self.inputFileText.setDisabled(True)
-        self.resolutionComboBox.setDisabled(True)
-        self.mediaTypeComboBox.setDisabled(True)
-        self.startDownloadButton.setDisabled(True)
+        self.disable(True)
 
-        self.downloadThread = DownloadThread(link, height, mediaType)
+        self.downloadThread = DownloadThread(link, height, mediaType, outputFolder)
         self.downloadThread.progress.connect(self.update_progress)
         self.downloadThread.output.connect(self.update_output)
         self.downloadThread.finished.connect(self.download_finished)
         self.downloadThread.start()
 
     def update_progress(self, percent_done):
-        
         self.progressBar.setValue(percent_done)
 
     def update_output(self, line):
-        print(line)
         self.renderTextOutputList.append(line)
 
     def download_finished(self):
         # Enable GUI elements
-        self.inputFileText.setDisabled(False)
-        self.resolutionComboBox.setDisabled(False)
-        self.mediaTypeComboBox.setDisabled(False)
-        self.startDownloadButton.setDisabled(False)
+        self.disable(False)
 
 
 if __name__ == "__main__":

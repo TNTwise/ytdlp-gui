@@ -27,6 +27,7 @@ class DownloadManager:
         self.resolutionHeight = resolutionHeight
         self.getAvailableHeights = getAvailableHeights
         self.printVersion = printVersion
+        self.output_template = os.path.join(self.output, '%(title)s.%(ext)s')
 
         self.inputValidation()
         self.download()
@@ -47,28 +48,26 @@ class DownloadManager:
             print("\nDownload completed")
 
     def download(self):
-        if self.mediaType.lower() == "video":
+        if self.mediaType.lower() == 'video':
             ydl_opts = {
-                "format": f"bestvideo[height<={self.resolutionHeight}]+bestaudio/best",
-                "progress_hooks": [self.progress_hook],  # Hook for progress reporting
-                "quiet": True,
-                "no_warnings": True,
+                'format': f'bestvideo[height<={self.resolutionHeight}]',
+                'progress_hooks': [self.progress_hook],  # Hook for progress reporting
+                'quiet': True,
+                'no_warnings': True,
+                'outtmpl': self.output_template
             }
-        elif self.mediaType.lower() == "audio":
+        elif self.mediaType.lower() == 'audio':
             ydl_opts = {
-                "format": "bestaudio/best",
-                "progress_hooks": [self.progress_hook],
-                "postprocessors": [
-                    {  # Convert audio to the desired format
-                        "key": "FFmpegExtractAudio",
-                        "preferredcodec": self.audioContainers[
-                            0
-                        ],  # Desired audio codec (e.g., mp3, wav)
-                        "preferredquality": "192",  # Desired quality (if applicable)
-                    }
-                ],
-                "quiet": True,
-                "no_warnings": True,
+                'format': 'bestaudio/best',
+                'progress_hooks': [self.progress_hook],
+                'postprocessors': [{  # Convert audio to the desired format
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': self.audioContainers[0],  # Desired audio codec (e.g., mp3, wav)
+                    'preferredquality': '192',  # Desired quality (if applicable)
+                }],
+                'quiet': True,
+                'no_warnings': True,
+                'outtmpl': self.output_template
             }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -100,6 +99,9 @@ class DownloadManager:
         print("Getting info from youtube video")
         with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
+            output_file = self.output_template % {'title': info_dict['title'], 'ext': info_dict['ext']}
+            if os.path.exists(output_file):
+                raise FileExistsError(f"The file '{output_file}' already exists.")
         return info_dict
 
 
