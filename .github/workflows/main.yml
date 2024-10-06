@@ -1,0 +1,185 @@
+
+name: build-prerelease
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  
+  build-Linux:
+    runs-on: ubuntu-20.04 
+    permissions: write-all  
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.10.8
+
+      - name: Install Python Dependencies
+        run: |
+          python3 -m pip install -r requirements.txt
+      - name: install other requirements
+        run : |
+          sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
+      - name: Build
+        run: python3 build.py --build_exe
+        
+      - name: copy backend
+        run: | 
+          mv dist/ bin/
+          cp -r backend bin/
+          
+      
+      - name: compress archive
+        run: |
+          zip -r main-Linux.zip bin/
+
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: main-Linux.zip
+          path: main-Linux.zip
+          
+  build-Windows:
+    runs-on: windows-2019
+    permissions: write-all  
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11.8
+
+      - name: Install Python Dependencies
+        run: |
+          python3 -m pip install -r requirements.txt
+      - name: Build
+        run: python3 build.py --build_exe
+        
+      - name: copy backend
+        run: cp -r backend dist/main/
+      
+      - name: compress archive
+        run: |
+            cd dist
+            tar -a -c -f main-Windows.zip main
+            cd ..
+            cp dist/main-Windows.zip main-Windows.zip
+
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: main-Windows.zip
+          path: main-Windows.zip
+          
+  build-MacOS:
+    runs-on: macos-13
+    permissions: write-all  
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11.9
+
+      - name: Install Python Dependencies
+        run: |
+          brew install llvm@15
+          brew install pyside
+          python3 -m pip install -r requirements.txt
+      - name: Build
+        run: python3 build.py --build_exe
+        
+      - name: copy backend
+        run: cp -r backend dist/main
+      
+      - name: compress archive
+        run: |
+          cd dist
+          zip -r main-MacOS_x86_64.zip main
+          cd ..
+          cp dist/main-MacOS_x86_64.zip main-MacOS_x86_64.zip
+
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: main-MacOS_x86_64.zip
+          path: main-MacOS_x86_64.zip
+          
+  build-MacOS_arm64:
+    runs-on: macos-14
+    permissions: write-all  
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11.9
+
+      - name: Install Python Dependencies
+        run: |
+          brew install pyside@6
+          python3 -m pip install -r requirements.txt
+      - name: Build
+        run: python3 build.py --build_exe
+        
+      - name: copy backend
+        run: cp -r backend dist/
+      
+      - name: compress archive
+        run: |
+          cd dist
+          zip -r main-MacOS_arm64.zip main
+          cd ..
+          cp dist/main-MacOS_arm64.zip main-MacOS_arm64.zip
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: main-MacOS_arm64.zip
+          path: main-MacOS_arm64.zip
+
+  Release:
+    needs: [build-Windows, build-Linux, build-MacOS, build-MacOS_arm64]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+          
+      - name: Generate version and tag
+        id: version_tag
+        run: |
+          version=$(python -c "from datetime import datetime; print(str(datetime.now()).split(' ')[0].replace('-',''))")
+          tag=$(python -c "import random, string; print(''.join(random.choices(string.ascii_letters, k=8)))")
+          echo "Version=$version"
+          echo "Tag=$version"
+          echo "::set-output name=version::$version"
+          echo "::set-output name=tag::$version"
+      
+      - name: Create Release and Upload Release Asset
+        uses: softprops/action-gh-release@v1        
+        with:
+          name: YT-dlp gui pre release
+          tag_name: prerelease
+          body: ${{ steps.version_tag.outputs.tag }}
+          draft: false
+          prerelease: true
+          
+          files: |
+              artifacts/main-Windows.zip/main-Windows.zip
+              artifacts/main-Linux.zip/main-Linux.zip
+              artifacts/main-MacOS_x86_64.zip/main-MacOS_x86_64.zip
+              artifacts/main-MacOS_arm64.zip/main-MacOS_arm64.zip
+
+              
+              
+        
+
+     
