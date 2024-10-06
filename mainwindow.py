@@ -317,19 +317,19 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_11.addWidget(self.label_12)
 
-        self.formatComboBox = QComboBox(self.widget_3)
-        self.formatComboBox.addItem("")
-        self.formatComboBox.addItem("")
-        self.formatComboBox.setObjectName(u"formatComboBox")
+        self.mediaTypeComboBox = QComboBox(self.widget_3)
+        self.mediaTypeComboBox.addItem("")
+        self.mediaTypeComboBox.addItem("")
+        self.mediaTypeComboBox.setObjectName(u"mediaTypeComboBox")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.formatComboBox.sizePolicy().hasHeightForWidth())
-        self.formatComboBox.setSizePolicy(sizePolicy1)
-        self.formatComboBox.setMinimumSize(QSize(0, 0))
-        self.formatComboBox.setMaximumSize(QSize(16777215, 30))
+        sizePolicy1.setHeightForWidth(self.mediaTypeComboBox.sizePolicy().hasHeightForWidth())
+        self.mediaTypeComboBox.setSizePolicy(sizePolicy1)
+        self.mediaTypeComboBox.setMinimumSize(QSize(0, 0))
+        self.mediaTypeComboBox.setMaximumSize(QSize(16777215, 30))
 
-        self.horizontalLayout_11.addWidget(self.formatComboBox)
+        self.horizontalLayout_11.addWidget(self.mediaTypeComboBox)
 
 
         self.verticalLayout_17.addWidget(self.widget_3)
@@ -572,8 +572,8 @@ class Ui_MainWindow(object):
         self.getDataButton.setText(QCoreApplication.translate("MainWindow", u"Get Data", None))
         self.outputFileSelectButton.setText(QCoreApplication.translate("MainWindow", u"Select Output Folder", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Format", None))
-        self.formatComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Video", None))
-        self.formatComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Audio", None))
+        self.mediaTypeComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Video", None))
+        self.mediaTypeComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Audio", None))
 
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Resolution", None))
         self.videoInfoTextEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

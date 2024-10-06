@@ -27,7 +27,7 @@ class DownloadManager:
         self.resolutionHeight = resolutionHeight
         self.getAvailableHeights = getAvailableHeights
         self.printVersion = printVersion
-        
+
         self.inputValidation()
         self.download()
 

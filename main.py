@@ -21,29 +21,92 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from QtCustom import RegularQTPopup
-from PySide6.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve, QThread
+from PySide6.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve, QThread, Signal
 from PySide6.QtGui import QIcon
 from mainwindow import Ui_MainWindow  # Import the UI class from the converted module
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 
 # other imports
 from QTStyle import Palette
-from QtCustom import SettingUpBackendPopup, DownloadProgressPopup, DisplayCommandOutputPopup
-from Util import pythonPath, backendDirectory, makeExecutable, currentDirectory, extractTarGZ, getPlatform
+from QtCustom import (
+    DownloadProgressPopup,
+    DisplayCommandOutputPopup,
+)
+from Util import (
+    pythonPath,
+    backendDirectory,
+    makeExecutable,
+    currentDirectory,
+    extractTarGZ,
+    getPlatform,
+)
 from platform import machine
+import subprocess
+import os
+import re
 
+class DownloadThread(QThread):
+    progress = Signal(float)
+    output = Signal(str)
+    finished = Signal()
+
+    def __init__(self, link, height, mediaType):
+        super().__init__()
+        self.link = link
+        self.height = height
+        self.mediaType = mediaType
+
+    def run(self):
+        self.renderProcess = subprocess.Popen(
+            [
+                pythonPath(),
+                os.path.join(backendDirectory(), "backend.py"),
+                "--url",
+                self.link,
+                "--resolutionHeight",
+                self.height,
+                "--mediaType",
+                self.mediaType,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
+        textOutput = []
+        for line in iter(self.renderProcess.stdout.readline, b""):
+            if self.renderProcess.poll() is not None:
+                break  # Exit the loop if the process has terminated
+            line = str(line.strip())
+            
+            percent_match = re.search(r"(\d+\.\d+)%", line)
+            if percent_match:
+                percent_done = float(percent_match.group(1))
+                self.progress.emit(percent_done)
+            self.output.emit(line)
+            textOutput.append(line)
+            if "Time to complete render" in line:
+                break
+        self.renderProcess.wait()
+        self.finished.emit()
+
+        
+
+    
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.renderProcess = None
+        self.percentDone = 0
+        self.renderTextOutputList = []
+        self.progressBar.setRange(0,100)
         self.stackedWidget.setCurrentIndex(
             2
         )  # i just copy pasted from rve, so i have to set it to this index
         self.__connect__()
         self.downloadPython()
         self.pipInstall(["yt-dlp"])
-        
 
     def __connect__(self):
         self.getDataButton.clicked.connect(self.getData)
@@ -79,6 +142,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # give executable permissions to python
             makeExecutable(pythonPath())
+
     def pipInstall(
         self, deps: list
     ):  # going to have to make this into a qt module pop up
@@ -113,7 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             title="Purging Cache",
             progressBarLength=1,
         )
-        
+
     def getData(self):
         link = self.inputFileText.text()
         resolutions = self.getResolutionsFromBackend(link)
@@ -122,8 +186,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def populateComboBoxes(self, resolutions):
         self.resolutionComboBox.addItems(resolutions)
 
-    def getResolutionsFromBackend(self,link):
-        
+    def getResolutionsFromBackend(self, link):
         self.process = subprocess.Popen(
             [
                 pythonPath(),
@@ -142,7 +205,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         totalOutput = ""
         for line in iter(self.process.stdout.readline, ""):
             totalOutput += line
-        
+
         output = totalOutput
         # hack to filter out bad find
         new_out = ""
@@ -157,11 +220,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         backends_str = output[start:end]
 
         # Convert the string representation of the list to an actual list
-        backends:list[str] = eval(backends_str)
+        backends: list[str] = eval(backends_str)
         n = []
         for i in backends:
             n.append(str(i.strip().replace(" ", "")))
         return n
+    def download(self):
+        link = self.inputFileText.text()
+        height = self.resolutionComboBox.currentText()
+        mediaType = self.mediaTypeComboBox.currentText()
+
+        # Disable GUI elements
+        self.inputFileText.setDisabled(True)
+        self.resolutionComboBox.setDisabled(True)
+        self.mediaTypeComboBox.setDisabled(True)
+        self.startDownloadButton.setDisabled(True)
+
+        self.downloadThread = DownloadThread(link, height, mediaType)
+        self.downloadThread.progress.connect(self.update_progress)
+        self.downloadThread.output.connect(self.update_output)
+        self.downloadThread.finished.connect(self.download_finished)
+        self.downloadThread.start()
+
+    def update_progress(self, percent_done):
+        
+        self.progressBar.setValue(percent_done)
+
+    def update_output(self, line):
+        print(line)
+        self.renderTextOutputList.append(line)
+
+    def download_finished(self):
+        # Enable GUI elements
+        self.inputFileText.setDisabled(False)
+        self.resolutionComboBox.setDisabled(False)
+        self.mediaTypeComboBox.setDisabled(False)
+        self.startDownloadButton.setDisabled(False)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
