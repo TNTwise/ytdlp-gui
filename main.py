@@ -114,7 +114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.getDataButton.clicked.connect(self.getData)
         self.startDownloadButton.clicked.connect(lambda: self.download())
         self.mediaTypeComboBox.currentTextChanged.connect(self.updateGuiElements)
-        self.startDownloadButton.setDisabled(False)
+        self.startDownloadButton.setDisabled(True)
         self.outputFileSelectButton.clicked.connect(self.openOutputFolder)
         self.outputFileText.setText(videosPath())
 

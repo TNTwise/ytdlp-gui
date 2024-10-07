@@ -27,7 +27,7 @@ class DownloadManager:
         self.resolutionHeight = resolutionHeight
         self.getAvailableHeights = getAvailableHeights
         self.printVersion = printVersion
-        self.output_template = os.path.join(self.output, '%(title)s.%(ext)s')
+        self.output_template = os.path.join(self.output, f'%(title)s.%(ext)s')
 
         self.inputValidation()
         self.download()
