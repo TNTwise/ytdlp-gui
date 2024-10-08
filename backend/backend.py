@@ -6,6 +6,7 @@ import os
 import yt_dlp
 import yt_dlp.version
 
+thisdir = os.getcwd()
 
 class DownloadManager:
     def __init__(
@@ -27,7 +28,10 @@ class DownloadManager:
         self.resolutionHeight = resolutionHeight
         self.getAvailableHeights = getAvailableHeights
         self.printVersion = printVersion
-        self.output_template = os.path.join(self.output, f'%(title)s.%(ext)s')
+        if not self.getAvailableHeights:
+            self.output_template = os.path.join(self.output, f'%(title)s.%(ext)s')
+        else:
+            self.output_template = None
 
         self.inputValidation()
         self.download()
@@ -99,9 +103,10 @@ class DownloadManager:
         print("Getting info from youtube video")
         with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
-            output_file = self.output_template % {'title': info_dict['title'], 'ext': info_dict['ext']}
-            if os.path.exists(output_file):
-                raise FileExistsError(f"The file '{output_file}' already exists.")
+            if not self.getAvailableHeights:
+                output_file = self.output_template % {'title': info_dict['title'], 'ext': info_dict['ext']}
+                if os.path.exists(output_file):
+                    raise FileExistsError(f"The file '{output_file}' already exists.")
         return info_dict
 
 
@@ -138,7 +143,7 @@ class Backend:
         parser.add_argument(
             "-o",
             "--output",
-            default=None,
+            default=os.getcwd(),
             help="output path to video",
             type=str,
         )
