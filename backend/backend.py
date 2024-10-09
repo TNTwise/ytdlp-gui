@@ -28,10 +28,6 @@ class DownloadManager:
         self.resolutionHeight = resolutionHeight
         self.getAvailableHeights = getAvailableHeights
         self.printVersion = printVersion
-        if not self.getAvailableHeights:
-            self.output_template = os.path.join(self.output, f'%(title)s.%(ext)s')
-        else:
-            self.output_template = None
 
         self.inputValidation()
         self.download()
@@ -58,7 +54,6 @@ class DownloadManager:
                 'progress_hooks': [self.progress_hook],  # Hook for progress reporting
                 'quiet': True,
                 'no_warnings': True,
-                'outtmpl': self.output_template
             }
         elif self.mediaType.lower() == 'audio':
             ydl_opts = {
@@ -71,7 +66,6 @@ class DownloadManager:
                 }],
                 'quiet': True,
                 'no_warnings': True,
-                'outtmpl': self.output_template
             }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -103,10 +97,7 @@ class DownloadManager:
         print("Getting info from youtube video")
         with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
-            if not self.getAvailableHeights:
-                output_file = self.output_template % {'title': info_dict['title'], 'ext': info_dict['ext']}
-                if os.path.exists(output_file):
-                    raise FileExistsError(f"The file '{output_file}' already exists.")
+            
         return info_dict
 
 

@@ -10,7 +10,7 @@ import shutil
 import platform
 import psutil
 import webbrowser
-
+print(os.path.abspath(__file__))
 homedir = os.path.expanduser("~")
 
 
