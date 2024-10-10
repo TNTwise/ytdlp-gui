@@ -31,10 +31,20 @@ class DownloadManager:
 
         self.inputValidation()
         self.download()
+        self.moveFileToOutputFolder()
+    def moveFileToOutputFolder(self):
+        for file in os.listdir(thisdir):
+            if self.title in file:
+                print(os.path.join(self.output, file))
+                os.rename(file, os.path.join(self.output, file))
+
+    
 
     def inputValidation(self):
+        res,ext,self.title = self.getData()
+        
         if self.getAvailableHeights:
-            print(self.getData()[0])
+            print(res)
             exit()
         if self.printVersion:
             print(yt_dlp.version.__version__)
@@ -42,6 +52,7 @@ class DownloadManager:
         if self.url is None:
             print("Please provide a url")
             exit()
+        
 
     def progress_hook(self, d):
         if d["status"] == "finished":
@@ -79,7 +90,8 @@ class DownloadManager:
         youtubeVideoInfoDict = self.getInfoDictFromURL()
         resolutions = self.getContentFromInfoDict(youtubeVideoInfoDict, "height")
         extensions = self.getContentFromInfoDict(youtubeVideoInfoDict, "ext")
-        return [resolutions, extensions]
+        title = youtubeVideoInfoDict["fulltitle"]
+        return [resolutions, extensions, title]
 
     def getContentFromInfoDict(self, info_dict, content):
         formats = info_dict.get("formats", [])
