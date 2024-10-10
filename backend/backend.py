@@ -20,7 +20,7 @@ class DownloadManager:
     ):
         super().__init__()
         self.videoContainers = ("mp4", "webm")
-        self.audioContainers = ("mp3", "wav")
+        self.audioContainers = ("m4a", "wav")
         self.mediaType = mediaType
         self.url = url
         self.output = output
@@ -62,7 +62,6 @@ class DownloadManager:
                 'postprocessors': [{  # Convert audio to the desired format
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': self.audioContainers[0],  # Desired audio codec (e.g., mp3, wav)
-                    'preferredquality': '192',  # Desired quality (if applicable)
                 }],
                 'quiet': True,
                 'no_warnings': True,
