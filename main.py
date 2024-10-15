@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )  # i just copy pasted from rve, so i have to set it to this index
         self.__connect__()
         self.downloadPython()
-        self.pipInstall(["yt-dlp"])
+        self.pipInstall(["yt-dlp","soundfile","numpy","audioread","mutagen"])
 
     def __connect__(self):
         self.getDataButton.clicked.connect(self.getData)
