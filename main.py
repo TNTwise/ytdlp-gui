@@ -90,7 +90,7 @@ class DownloadThread(QThread):
                 self.progress.emit(percent_done)
             self.output.emit(line)
             textOutput.append(line)
-            if "Time to complete render" in line:
+            if "Done with download" in line:
                 break
         self.renderProcess.wait()
         self.finished.emit()
@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )  # i just copy pasted from rve, so i have to set it to this index
         self.__connect__()
         self.downloadPython()
-        self.pipInstall(["yt-dlp","soundfile","numpy","audioread","mutagen"])
+        self.pipInstall(["yt-dlp","soundfile","numpy","audioread","mutagen","pyffmpeg"])
 
     def __connect__(self):
         self.getDataButton.clicked.connect(self.getData)

@@ -1,11 +1,12 @@
 import argparse
 import sys
 import os
+import subprocess
 
 # other imports
 import yt_dlp
 import yt_dlp.version
-
+from pyffmpeg import FFmpeg
 thisdir = os.getcwd()
 
 class DownloadManager:
@@ -19,8 +20,8 @@ class DownloadManager:
         printVersion: bool,
     ):
         super().__init__()
-        self.videoContainers = ("mp4", "webm")
-        self.audioContainers = ("m4a", "wav")
+        self.videoContainers = ("mp4")
+        self.audioContainers = ("wav")
         self.mediaType = mediaType
         self.url = url
         self.output = output
@@ -31,15 +32,32 @@ class DownloadManager:
 
         self.inputValidation()
         self.download()
-        self.moveFileToOutputFolder()
-    def moveFileToOutputFolder(self):
+        self.moveFileToOutputFolder(transcode=mediaType.lower()=="audio") # we want to transcode the audio to the desired format
+
+    def moveFileToOutputFolder(self, transcode=False):
         for file in os.listdir(thisdir):
             if self.title in file:
-                print(os.path.join(self.output, file))
-                os.rename(file, os.path.join(self.output, file))
-
-    
-
+                output_file = os.path.join(self.output, file)
+                print(output_file)
+                if not transcode:
+                    os.rename(file, output_file)
+                else:
+                    ff = FFmpeg()
+                    ffmpeg_file = ff._ffmpeg_file
+                    full_path = os.path.join(thisdir, file)
+                    output_file = os.path.join(self.output, file.split(".")[0] + ".wav")
+                    # command: f'{ffmpeg_file} -i "{full_path}" "{output_file}"'
+                    cmd = subprocess.Popen([
+                        ffmpeg_file,
+                        "-i",
+                        full_path,
+                        output_file
+                    ],
+                    stderr=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL) # hack because pyffmpeg is broken as shit
+                    cmd.wait()
+                    os.remove(full_path)
+        print("Done with download")
     def inputValidation(self):
         res,ext,self.title = self.getData()
         
@@ -72,7 +90,6 @@ class DownloadManager:
                 'progress_hooks': [self.progress_hook],
                 'postprocessors': [{  # Convert audio to the desired format
                     'key': 'FFmpegExtractAudio',
-                    'preferredcodec': self.audioContainers[0],  # Desired audio codec (e.g., mp3, wav)
                 }],
                 'quiet': True,
                 'no_warnings': True,
